@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:employees/model/employee.dart';
 import 'package:employees/utils/database_helper.dart';
 import 'package:employees/ui/employee_screen.dart';
+import 'package:employees/ui/employee_info.dart';
 
 class ListViewEmployees extends StatefulWidget {
   @override
@@ -10,111 +10,161 @@ class ListViewEmployees extends StatefulWidget {
 }
 
 class _ListViewEmployeesState extends State<ListViewEmployees> {
-  DatabaseHelper db = new DatabaseHelper();
   List<Employee> items = new List();
+  DatabaseHelper db = new DatabaseHelper();
+  TextEditingController editingController = TextEditingController();
+
+
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
+
     db.getAllEmployees().then((employees) {
       setState(() {
         employees.forEach((employee) {
           items.add(Employee.fromMap(employee));
+          editingController.addListener((){
+            setState(() {
+
+            });
+          });
+
         });
       });
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return MaterialApp(
-        title: 'All Employees',
-        home: Scaffold(
+      title: 'All Employees',
+      home: Scaffold(
+
+
+
+        appBar: AppBar(
+          title: Text('All Employees'),
+          centerTitle: true,
           backgroundColor: Colors.deepPurpleAccent,
-          appBar: AppBar(
-            backgroundColor: Colors.deepPurple,
-            title: Text('All Employees'),
-          ),
-          body: Center(
-            child: ListView.builder(
-              itemCount: items.length,
-              padding: const EdgeInsets.all(15.0),
-              itemBuilder: (context, position) {
-                return Column(
-                  children: <Widget>[
-                    Divider(
-                      height: 5.0,
-                    ),
-                    Row(
-                      children: <Widget>[
-                        new Expanded(
-                          child: ListTile(
-                            title: Text(
-                              '${items[position].name}',
-                              style:
-                              TextStyle(fontSize: 22.0, color: Colors.redAccent),
-                            ),
-                            subtitle: Text(
-                              '${items[position].age},${items[position].city},${items[position].department}',
-                              style: TextStyle(
-                                  fontSize: 18.0, fontStyle: FontStyle.italic),
+          actions: <Widget>[
+            Container(
+              width: 100.0,
+             child: TextField(
 
-                            ),
-                            leading: Column(
-                              children: <Widget>[
-                                Padding(padding: EdgeInsets.all(22.0),),
-                                CircleAvatar(
-                                  radius: 18.0,
-                                  backgroundColor: Colors.amber,
-                                  child: Text(
-                                    '${items[position].id}',
-                                    style: TextStyle(
-                                        fontSize: 22.0, color: Colors.redAccent),
-                                  ),
-                                ),
-                                IconButton(icon: Icon(Icons.delete,color: Colors.red),
-                                    onPressed: ()=>_deleteEmployee(context,items[position],position))
-                              ],
-                            ),
-                            onTap: ()=> _navigateToEmployee(context,items[position]),
-                          ),
-                        )
-                      ],
-                    )
 
-                  ],
-                );
-              },
+                controller: editingController,
+                decoration: InputDecoration(
+                    labelText: "Search",
+                    hintText: "Search",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+              ),
             ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
-            backgroundColor: Colors.orange,
-            onPressed: ()=> _createNewEmployee(context),
-          ),
+
+
+          ],
         ),
+        body: Center(
+
+          child: Column(
+            children: <Widget>[
+
+              ListView.builder(
+                  itemCount: items.length,
+                  padding: const EdgeInsets.all(15.0),
+                  itemBuilder: (context, position) {
+                    return
+                      Column(
+                        children: <Widget>[
+
+                          Divider(
+                            height: 5.0,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              new Expanded(
+                                  child: ListTile(
+                                    title: Text(
+                                      '${items[position].name}',
+                                      style: TextStyle(
+                                          fontSize: 22.0, color: Colors.redAccent),
+                                    ) ,
+                                    subtitle: Text(
+                                      '${items[position].age} - ${items[position].city} - ${items[position].department}',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                    leading: Column(
+                                      children: <Widget>[
+                                        Padding(padding: EdgeInsets.all(1.0)),
+                                        CircleAvatar(
+                                          backgroundColor: Colors.amber,
+                                          radius: 18.0,
+                                          child: Text(
+                                            '${items[position].id}',
+                                            style: TextStyle(
+                                                fontSize: 22.0, color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () =>
+                                        _navigateToEmployeeInfo(context, items[position]),
+                                  )),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: Colors.blueAccent,
+                                ),
+                                onPressed: () =>
+                                    _navigateToEmployee(context, items[position]),
+                              ),
+                              IconButton(
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () => _deleteEmployee(
+                                      context, items[position], position))
+                            ],
+                          ),
+                        ],
+                      );
+                  })
+            ],
+          ) ,
+        ),
+        floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            backgroundColor: Colors.deepOrange,
+            onPressed: () => _createNewEmployee(context)),
+      ),
     );
   }
 
-  _deleteEmployee(BuildContext context, Employee employee, int position) async{
-    db.deleteEmployee(employee.id).then((employees){
+  _deleteEmployee(BuildContext context, Employee employee, int position) async {
+    db.deleteEmployee(employee.id).then((employees) {
       setState(() {
         items.removeAt(position);
       });
-    }
-    );
+    });
   }
 
-  void _navigateToEmployee(BuildContext context, Employee employee)async {
-    String result = await Navigator.push(context,
-        MaterialPageRoute(builder: (context)=> EmployeeScreen(employee))
+  void _navigateToEmployee(BuildContext context, Employee employee) async {
+    String result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EmployeeScreen(employee)),
     );
-    if(result == 'update'){
-      db.getAllEmployees().then((employees){
+
+    if (result == 'update') {
+      db.getAllEmployees().then((employees) {
         setState(() {
           items.clear();
-          employees.forEach((employee){
+          employees.forEach((employee) {
             items.add(Employee.fromMap(employee));
           });
         });
@@ -122,22 +172,30 @@ class _ListViewEmployeesState extends State<ListViewEmployees> {
     }
   }
 
-  void _createNewEmployee(BuildContext context) async{
-    String result = await Navigator.push(context,
-        MaterialPageRoute(builder: (context)=> EmployeeScreen(
-            Employee( '', '', '', '', '')))
+  void _navigateToEmployeeInfo(BuildContext context, Employee employee) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EmployeeInfo(employee)),
     );
-    if(result == 'save'){
-      db.getAllEmployees().then((employees){
+  }
+
+  void _createNewEmployee(BuildContext context) async {
+    String result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => EmployeeScreen(Employee('', '', '', '', ''))),
+    );
+
+    if (result == 'save') {
+      db.getAllEmployees().then((employees) {
         setState(() {
           items.clear();
-          employees.forEach((employee){
+          employees.forEach((employee) {
             items.add(Employee.fromMap(employee));
           });
         });
       });
     }
-
   }
 
 
