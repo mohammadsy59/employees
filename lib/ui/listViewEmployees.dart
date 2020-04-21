@@ -1,142 +1,106 @@
+import 'package:employees/ui/search%20patient.dart';
 import 'package:flutter/material.dart';
 import 'package:employees/model/employee.dart';
 import 'package:employees/utils/database_helper.dart';
 import 'package:employees/ui/employee_screen.dart';
 import 'package:employees/ui/employee_info.dart';
 
-class ListViewEmployees extends StatefulWidget {
+class ListViewEmployees extends StatefulWidget{
   @override
   _ListViewEmployeesState createState() => new _ListViewEmployeesState();
 }
 
-class _ListViewEmployeesState extends State<ListViewEmployees> {
+class _ListViewEmployeesState extends State<ListViewEmployees>{
+
   List<Employee> items = new List();
   DatabaseHelper db = new DatabaseHelper();
-  TextEditingController editingController = TextEditingController();
-
+  TextEditingController searchEditController = new TextEditingController(
+    text: 'search'
+  );
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    db.getAllEmployees().then((employees) {
+    db.getAllEmployees().then((employees){
       setState(() {
-        employees.forEach((employee) {
+        employees.forEach((employee){
           items.add(Employee.fromMap(employee));
-          editingController.addListener((){
-            setState(() {
-
-            });
-          });
-
         });
       });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'All Employees',
       home: Scaffold(
-
-
-
         appBar: AppBar(
+leading: IconButton(icon: Icon(Icons.search), onPressed: ()=> _navigateToSearchEmployee(context)),
+
           title: Text('All Employees'),
-          centerTitle: true,
+
           backgroundColor: Colors.deepPurpleAccent,
-          actions: <Widget>[
-            Container(
-              width: 100.0,
-             child: TextField(
-
-
-                controller: editingController,
-                decoration: InputDecoration(
-                    labelText: "Search",
-                    hintText: "Search",
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
-              ),
-            ),
-
-
-          ],
         ),
         body: Center(
+          child: ListView.builder(
+              itemCount: items.length,
+              padding:const EdgeInsets.all(15.0),
+              itemBuilder: (context , position){
+                return Column(
+                  children: <Widget>[
+                    Divider(height: 5.0,),
+                    Row(
+                      children: <Widget>[
 
-          child: Column(
-            children: <Widget>[
-
-              ListView.builder(
-                  itemCount: items.length,
-                  padding: const EdgeInsets.all(15.0),
-                  itemBuilder: (context, position) {
-                    return
-                      Column(
-                        children: <Widget>[
-
-                          Divider(
-                            height: 5.0,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              new Expanded(
-                                  child: ListTile(
-                                    title: Text(
-                                      '${items[position].name}',
-                                      style: TextStyle(
-                                          fontSize: 22.0, color: Colors.redAccent),
-                                    ) ,
-                                    subtitle: Text(
-                                      '${items[position].age} - ${items[position].city} - ${items[position].department}',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                        fontStyle: FontStyle.italic,
+                        new Expanded(
+                            child: ListTile(
+                              title: Text('${items[position].name}',
+                                style: TextStyle(fontSize: 22.0,color: Colors.redAccent
+                                ),
+                              ),
+                              subtitle: Text('${items[position].age} - ${items[position].city} - ${items[position].department}',
+                                style: TextStyle(fontSize: 14.0,fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              leading: Column(
+                                children: <Widget>[
+                                  Padding(padding: EdgeInsets.all(1.0)),
+                                  CircleAvatar(
+                                    backgroundColor: Colors.amber,
+                                    radius: 18.0,
+                                    child: Text('${items[position].id}',
+                                      style: TextStyle(fontSize: 22.0,color: Colors.white
                                       ),
                                     ),
-                                    leading: Column(
-                                      children: <Widget>[
-                                        Padding(padding: EdgeInsets.all(1.0)),
-                                        CircleAvatar(
-                                          backgroundColor: Colors.amber,
-                                          radius: 18.0,
-                                          child: Text(
-                                            '${items[position].id}',
-                                            style: TextStyle(
-                                                fontSize: 22.0, color: Colors.white),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    onTap: () =>
-                                        _navigateToEmployeeInfo(context, items[position]),
-                                  )),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.blueAccent,
-                                ),
-                                onPressed: () =>
-                                    _navigateToEmployee(context, items[position]),
-                              ),
-                              IconButton(
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
                                   ),
-                                  onPressed: () => _deleteEmployee(
-                                      context, items[position], position))
-                            ],
-                          ),
-                        ],
-                      );
-                  })
-            ],
-          ) ,
+
+                                ],
+                              ),
+                              onTap: () => _navigateToEmployeeInfo(context , items[position]),
+                            )
+                        ),
+
+                        IconButton(icon: Icon(Icons.edit,color: Colors.blueAccent,),
+                          onPressed: () => _navigateToEmployee(context , items[position]),
+                        ),
+
+                        IconButton(icon: Icon(Icons.delete,color: Colors.red,),
+                            onPressed: () => _deleteEmployee(context,items[position],position)
+                        )
+                      ],
+                    ),
+
+
+
+                  ],
+
+                );
+              }
+          ),
         ),
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
@@ -146,25 +110,29 @@ class _ListViewEmployeesState extends State<ListViewEmployees> {
     );
   }
 
-  _deleteEmployee(BuildContext context, Employee employee, int position) async {
-    db.deleteEmployee(employee.id).then((employees) {
+
+
+
+  _deleteEmployee(BuildContext context,Employee employee,int position) async{
+    db.deleteEmployee(employee.id).then((employees){
       setState(() {
         items.removeAt(position);
       });
     });
   }
 
-  void _navigateToEmployee(BuildContext context, Employee employee) async {
+
+  void  _navigateToEmployee(BuildContext context ,Employee employee)async{
     String result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EmployeeScreen(employee)),
+      MaterialPageRoute(builder:(context) => EmployeeScreen(employee)),
     );
 
-    if (result == 'update') {
-      db.getAllEmployees().then((employees) {
+    if(result == 'update'){
+      db.getAllEmployees().then((employees){
         setState(() {
           items.clear();
-          employees.forEach((employee) {
+          employees.forEach((employee){
             items.add(Employee.fromMap(employee));
           });
         });
@@ -172,31 +140,44 @@ class _ListViewEmployeesState extends State<ListViewEmployees> {
     }
   }
 
-  void _navigateToEmployeeInfo(BuildContext context, Employee employee) async {
+
+
+
+  void  _navigateToEmployeeInfo(BuildContext context ,Employee employee)async{
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EmployeeInfo(employee)),
+      MaterialPageRoute(builder:(context) => EmployeeInfo(employee)),
     );
+
+
   }
 
-  void _createNewEmployee(BuildContext context) async {
+
+
+  void _createNewEmployee(BuildContext context) async{
     String result = await Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) => EmployeeScreen(Employee('', '', '', '', ''))),
+      MaterialPageRoute(builder:(context) => EmployeeScreen(
+          Employee(  '', '', '', '', ''))),
     );
 
-    if (result == 'save') {
-      db.getAllEmployees().then((employees) {
+    if(result == 'save'){
+      db.getAllEmployees().then((employees){
         setState(() {
           items.clear();
-          employees.forEach((employee) {
+          employees.forEach((employee){
             items.add(Employee.fromMap(employee));
           });
         });
       });
     }
   }
+  void  _navigateToSearchEmployee(BuildContext context )async{
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder:(context) => SerchPatient()),
+    );
 
 
+  }
 }

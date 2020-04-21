@@ -1,4 +1,7 @@
 import 'dart:async';
+
+
+import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:employees/model/employee.dart';
@@ -94,6 +97,22 @@ class DatabaseHelper {
     var dbClient = await db;
     return await dbClient
         .delete(tableEmployee, where: '$columnId = ?', whereArgs: [id]);
+  }
+  Future<List> getEmployeeByName(String name)async{
+    var dbClient = await db;
+    var result =     await dbClient.query(tableEmployee, columns: [
+      columnId,
+      columnAge,
+      columnName,
+      columnDepartment,
+      columnCity,
+      columnDescription
+    ],
+    where: '$columnName = ?' ,whereArgs: ['%$name%']);
+
+      return result.toList();
+
+
   }
 
   Future close() async {
