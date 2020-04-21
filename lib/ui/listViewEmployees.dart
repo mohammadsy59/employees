@@ -43,7 +43,7 @@ leading: IconButton(icon: Icon(Icons.search), onPressed: ()=> _navigateToSearchE
 
           title: Text('All Employees'),
 
-          backgroundColor: Colors.deepPurpleAccent,
+          backgroundColor: Colors.red,
         ),
         body: Center(
           child: ListView.builder(
@@ -70,11 +70,9 @@ leading: IconButton(icon: Icon(Icons.search), onPressed: ()=> _navigateToSearchE
                                 children: <Widget>[
                                   Padding(padding: EdgeInsets.all(1.0)),
                                   CircleAvatar(
-                                    backgroundColor: Colors.amber,
+                                    backgroundColor: Colors.deepOrangeAccent,
                                     radius: 18.0,
-                                    child: Text('${items[position].id}',
-                                      style: TextStyle(fontSize: 22.0,color: Colors.white
-                                      ),
+                                    child: Icon(Icons.perm_identity
                                     ),
                                   ),
 
