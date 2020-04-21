@@ -46,7 +46,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
         alignment: Alignment.center,
         child: Column(
           children: <Widget>[
-           Scroll
+
             TextField(
               controller: _nameController,
               decoration: InputDecoration(labelText: 'Name'),
