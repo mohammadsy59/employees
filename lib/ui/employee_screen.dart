@@ -37,78 +37,88 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
         title: Text('Patients') ,
         backgroundColor: Colors.red,
         ),
-       body: Container(
-        margin: EdgeInsets.all(15.0),
-        alignment: Alignment.center,
-        child: Column(
-          children: <Widget>[
+       body: SingleChildScrollView(
+         child:  Container(
+           margin: EdgeInsets.all(15.0),
+           alignment: Alignment.center,
+           child: Column(
+             children: <Widget>[
 
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            Padding(padding: EdgeInsets.all(5.0)),
-            TextField(
-              controller: _ageController ,
-              decoration: InputDecoration(labelText: 'Age'),
-            ),
-            Padding(padding: EdgeInsets.all(5.0)),
-            TextField(
-              controller: _departmentController,
-              decoration: InputDecoration(labelText: 'Dept'),
-            ),
-            Padding(padding: EdgeInsets.all(5.0)),
-            TextField(
-              controller: _cityController,
-              decoration: InputDecoration(labelText: 'City'),
-            ),
-            Padding(padding: EdgeInsets.all(5.0)),
-            TextField(
+               TextField(
+                 controller: _nameController,
+                 decoration: InputDecoration(labelText: 'Name'),
+               ),
+               Padding(padding: EdgeInsets.all(5.0)),
+               TextField(
+                 controller: _ageController ,
+                 decoration: InputDecoration(labelText: 'Age'),
+               ),
+               Padding(padding: EdgeInsets.all(5.0)),
+               TextField(
+                 controller: _departmentController,
+                 decoration: InputDecoration(labelText: 'Dept'),
+               ),
+               Padding(padding: EdgeInsets.all(5.0)),
+               TextField(
+                 controller: _cityController,
+                 decoration: InputDecoration(labelText: 'City'),
+               ),
+               Padding(padding: EdgeInsets.all(5.0)),
+               TextField(
 
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-            ),
-            Padding(padding: EdgeInsets.all(5.0)),
+                 controller: _descriptionController,
+                 decoration: InputDecoration(labelText: 'Description'),
+                 maxLines: 10,
+               ),
+               Padding(padding: EdgeInsets.all(5.0)),
 
-            RaisedButton(
-              child: (widget.employee.id != null) ? Text(
-                'update',style: TextStyle(color: Colors.white),) : Text('save',style: TextStyle(color: Colors.white),) ,
-              color: Colors.redAccent,
-              onPressed: () {
-                if(widget.employee.id != null){
-                  db.updateEmployee(Employee.fromMap({
-                    'id' : widget.employee.id,
-                    'age' : _ageController.text,
-                    'name' : _nameController.text,
-                    'department' :  _departmentController.text,
-                    'city' : _cityController.text,
-                    'description' : _descriptionController.text
-                  })).then((_){
-                    Navigator.pop(context, 'update');
-                  }) ;
-                } else {
-                  db.saveEmployee(Employee(
-                      _ageController.text,
-                      _nameController.text,
-                      _departmentController.text,
-                      _cityController.text,
-                      _descriptionController.text
-                  )).then((_){
-                    Navigator.pop(context, 'save');
-                  });
-                }
+               RaisedButton(
+                 child: (widget.employee.id != null) ? Text(
+                   'update',style: TextStyle(color: Colors.white),) : Text('save',style: TextStyle(color: Colors.white),) ,
+                 color: Colors.redAccent,
+                 onPressed: () {
+                   if(widget.employee.id != null){
+                     db.updateEmployee(Employee.fromMap({
+                       'id' : widget.employee.id,
+                       'age' : _ageController.text,
+                       'name' : _nameController.text,
+                       'department' :  _departmentController.text,
+                       'city' : _cityController.text,
+                       'description' : _descriptionController.text
+                     })).then((_){
+                       Navigator.pop(context, 'update');
+                     }) ;
+                   } else {
+                     db.saveEmployee(Employee(
+                         _ageController.text,
+                         _nameController.text,
+                         _departmentController.text,
+                         _cityController.text,
+                         _descriptionController.text
+                     )).then((_){
+                       Navigator.pop(context, 'save');
+                     });
+                   }
 
 
-              },
-            ),
+                 },
+               )
+             ],
+           ),
 
-          ],
-        ),
-      ),
-    );
+
+
+
+         )
+       )
+      ,
+           );
+
+
   }
 }
